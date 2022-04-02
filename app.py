@@ -11,22 +11,50 @@ def define_player_order():
   print(f"The order of players will be {all_players[0]}, {all_players[1]}, then {all_players[2]}.\n")
   return all_players
 
+def get_all_letters_of_puzzle(initial_list):
+  final_list = []
+  i = 0
+  while i < len(initial_list):
+    if initial_list[i] not in final_list:
+      final_list.append(initial_list[i])
+    i += 1
+  return final_list
+
+def count_number_of_letter_occurrance(puzzle_list, letter_list):
+  count_list = []
+  i = 0
+
+  for x in letters_of_puzzle:  
+    count_list.append(puzzle_list.count(letter_list[i]))
+    i += 1
+  return count_list
+
+
+
 ##### main program
 game_on = True
 
 while game_on == True:
-  consonants = [ 'B', 'C', 'D', 'F', 'G', 'H', 
+  possible_puzzles = [ 
+                      'disney world', 
+                      'every rose has its thorn',
+                      'national hockey league' 
+                      ]
+
+  consonants = [ 
+                'B', 'C', 'D', 'F', 'G', 'H', 
                 'J', 'K', 'L', 'M', 'N', 'P', 
                 'Q', 'R', 'S', 'T', 'V', 'W', 
                 'X', 'Y', 'Z'
-              ]
+               ]
   vowels = [ 'A', 'E', 'I', 'O', 'U' ]
 
-  points = [ '100', '100', '100', '100', '100', '100',
+  points = [ 
+            '100', '100', '100', '100', '100', '100',
             '200', '200', '200', '200', '200', '200',
             '500', '500', '500', '750', '750', '750', 
             '1100', '5000'
-          ]
+           ]
 
   player1_score = 0
   player2_score = 0
@@ -44,10 +72,18 @@ while game_on == True:
   """
 
   players = []
+  letters_of_puzzle = []
 
-  puzzle = input("Enter a word or a phrase for the puzzle.\n")
+  # puzzle = input("Enter a word or a phrase for the puzzle.\n")
+  puzzle = random.choice(possible_puzzles)
   puzzle_list = list(puzzle.upper())
   print(puzzle_list)
+  letters_of_puzzle = get_all_letters_of_puzzle(puzzle_list)
+  print(letters_of_puzzle)
+  
+  letter_count = count_number_of_letter_occurrance(puzzle_list, letters_of_puzzle)
+  print(letter_count)
+
 
   # get a count of each letter in the puzzle_list
   # 1. get length of list
@@ -70,25 +106,43 @@ while game_on == True:
     if int(player_choice) == 1:
       spin_points = random.choice(points)
       letter = input(f"For {spin_points} points, which consonant would you like to choose?\n").upper()
+
+      if letter in consonants:
+        if letter in puzzle_list:
+          print(f"{letter} is in the puzzle.")
+          # TODO: show the puzzle
+          # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
+          # TODO: add X * spin_points to player's total points
+        else:
+          print(f"I'm sorry, there are no {letter}s.")
+      else: 
+        print(f"I'm sorry. {letter} is not a consonant.")
+
     elif int(player_choice) == 2:
-      letter = input("Which vowel would you like to choose?\n")
+      letter = input("Which vowel would you like to choose?\n").upper()
+
+      if letter in vowels:
+        if letter in puzzle_list:
+          print(f"{letter} is in the puzzle.")
+          # TODO: show the puzzle
+          # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
+          # TODO: subtract 200 points from player's total points
+        else:
+          print(f"I'm sorry, there are no {letter}s.")
+      else: 
+        print(f"I'm sorry. {letter} is not a vowel.")
+
     elif int(player_choice) == 3:
-      attempt = input("What is the puzzle?\n")
-      if attempt.upper() == puzzle.upper():
+      puzzle_attempt = input("What is the puzzle?\n")
+      if puzzle_attempt.upper() == puzzle.upper():
         print(f"Congratulations {players[0]}! You solved the puzzle!")
         game_over = True
       else:
         print(f"I'm sorry, {players[0]}, that is incorrect. {players[1]}, it is your turn.")
+
     else:
       print("Please select a valid option.")
       player_choice = input(player_options)
-
-    # if # any letter matches:
-    #   # show letters
-    #   # add points
-    #   # ask for options
-    # else # no letters match
-      # next person's turn
 
   play_again = input("Would you like to play again? Y | N ")
   if play_again.upper() == "Y":

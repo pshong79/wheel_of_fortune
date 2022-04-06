@@ -61,9 +61,7 @@ while game_on == True:
   player3_score = 0
 
   game_over = False
-  player1_turn = False
-  player2_turn = False
-  player3_turn = False
+  player_turn = [ True, False, False ]
 
   player_options = f"""
   1. Spin the wheel.
@@ -77,12 +75,20 @@ while game_on == True:
   # puzzle = input("Enter a word or a phrase for the puzzle.\n")
   puzzle = random.choice(possible_puzzles)
   puzzle_list = list(puzzle.upper())
+  # delete during clean up
   print(puzzle_list)
   letters_of_puzzle = get_all_letters_of_puzzle(puzzle_list)
+  # delete during clean up
   print(letters_of_puzzle)
   
   letter_count = count_number_of_letter_occurrance(puzzle_list, letters_of_puzzle)
+  # delete during clean up
   print(letter_count)
+
+  for space in range(len(puzzle_list)):
+    if puzzle_list[space] == " ":
+      puzzle_list[space] = "_"  
+  print(f"puzzle_list {puzzle_list}")
 
 
   # get a count of each letter in the puzzle_list

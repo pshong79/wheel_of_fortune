@@ -49,6 +49,8 @@ while game_on == True:
                ]
   vowels = [ 'A', 'E', 'I', 'O', 'U' ]
 
+  all_letters = consonants + vowels
+
   points = [ 
             '100', '100', '100', '100', '100', '100',
             '200', '200', '200', '200', '200', '200',
@@ -87,19 +89,11 @@ while game_on == True:
 
   for space in range(len(puzzle_list)):
     if puzzle_list[space] == " ":
-      puzzle_list[space] = "_"  
-  print(f"puzzle_list {puzzle_list}")
-
-
-  # get a count of each letter in the puzzle_list
-  # 1. get length of list
-  # 2. iterate through list
-  # 3. while not at end of list, 
-  # 4. letter1.= item1
-  # 5. letter1_count = puzzle_list.count(letter1)
-  # 6. if item2 != item1
-  # 7. true -> letter2 = item2 and letter2_count = puzzle_list.count(letter2)
-  # 8. continue until end of list ()
+      puzzle_list[space] = "_"
+    elif puzzle_list[space] in all_letters:
+      puzzle_list[space] = " "
+  print(f"Here is the puzzle:\n{puzzle_list}")
+  # TODO: if time, display each word on a new line
 
   players = define_player_order()
 

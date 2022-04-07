@@ -1,3 +1,8 @@
+#### I think there are currently three things left to do:
+# 1. figure out how to manage turns for players.
+# 2. score keeping for correct letters.
+# 3. score keepting for solving puzzle.
+
 import random
 
 ##### functions:
@@ -73,12 +78,18 @@ while game_on == True:
 
   players = []
   letters_of_puzzle = []
+  original_puzzle = []
 
   # puzzle = input("Enter a word or a phrase for the puzzle.\n")
   puzzle = random.choice(possible_puzzles)
   puzzle_list = list(puzzle.upper())
+  # This creates a duplicate of the list. In Python, both lists are pointing to the same object so if one is updated, both are updated.
+  # Therefore, the "slice" method (:), needs to be used to create a copy of the list.
+  original_puzzle = puzzle_list[:]
+
   # delete during clean up
-  print(puzzle_list)
+  print(f"puzzle_list {puzzle_list}")
+  print(f"original_puzzle {original_puzzle}")
   letters_of_puzzle = get_all_letters_of_puzzle(puzzle_list)
   # delete during clean up
   print(letters_of_puzzle)
@@ -108,8 +119,15 @@ while game_on == True:
       letter = input(f"For {spin_points} points, which consonant would you like to choose?\n").upper()
 
       if letter in consonants:
-        if letter in puzzle_list:
+        print(f"letter {letter}")
+        print(f"original_puzzle {original_puzzle}")
+        if letter in original_puzzle:
           print(f"{letter} is in the puzzle.")
+
+          for cnsnt in range(len(original_puzzle)):
+            if original_puzzle[cnsnt] == letter:
+              puzzle_list[cnsnt] = letter
+          print(f"Here is the puzzle:\n{puzzle_list}")
           # TODO: show the puzzle
           # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
           # TODO: add X * spin_points to player's total points
@@ -122,8 +140,15 @@ while game_on == True:
       letter = input("Which vowel would you like to choose?\n").upper()
 
       if letter in vowels:
-        if letter in puzzle_list:
+        print(f"letter {letter}")
+        print(f"original_puzzle {original_puzzle}")
+        if letter in original_puzzle:
           print(f"{letter} is in the puzzle.")
+
+          for vwl in range(len(original_puzzle)):
+            if original_puzzle[vwl] == letter:
+              puzzle_list[vwl] = letter
+          print(f"Here is the puzzle:\n{puzzle_list}")
           # TODO: show the puzzle
           # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
           # TODO: subtract 200 points from player's total points

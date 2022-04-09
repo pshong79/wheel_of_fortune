@@ -66,6 +66,7 @@ while game_on == True:
   player1_score = 0
   player2_score = 0
   player3_score = 0
+  player_num = 0
 
   game_over = False
   player_turn = [ True, False, False ]
@@ -85,6 +86,7 @@ while game_on == True:
   puzzle_list = list(puzzle.upper())
   # This creates a duplicate of the list. In Python, both lists are pointing to the same object so if one is updated, both are updated.
   # Therefore, the "slice" method (:), needs to be used to create a copy of the list.
+  # Reference: https://stackoverflow.com/questions/11993878/python-why-does-my-list-change-when-im-not-actually-changing-it
   original_puzzle = puzzle_list[:]
 
   # delete during clean up
@@ -105,69 +107,112 @@ while game_on == True:
       puzzle_list[space] = " "
   print(f"Here is the puzzle:\n{puzzle_list}")
   # TODO: if time, display each word on a new line
+  # TODO: if time, check for already guessed letters
 
   players = define_player_order()
 
-  # TODO: need to assign flags to players to manage whose turn it is. 
-
   while game_over == False:
-    print(f"{players[0]}, would you like to:")
-    player_choice = input(player_options)
+    while player_num < 3:
+      while player_turn[player_num] == True:
+        print(f"{players[player_num]}, would you like to:")
+        player_choice = input(player_options)
 
-    if int(player_choice) == 1:
-      spin_points = random.choice(points)
-      letter = input(f"For {spin_points} points, which consonant would you like to choose?\n").upper()
+        if int(player_choice) == 1:
+          spin_points = random.choice(points)
+          letter = input(f"For {spin_points} points, which consonant would you like to choose?\n").upper()
 
-      if letter in consonants:
-        print(f"letter {letter}")
-        print(f"original_puzzle {original_puzzle}")
-        if letter in original_puzzle:
-          print(f"{letter} is in the puzzle.")
+          if letter in consonants:
+            print(f"letter {letter}")
+            print(f"original_puzzle {original_puzzle}")
+            if letter in original_puzzle:
+              print(f"{letter} is in the puzzle.")
 
-          for cnsnt in range(len(original_puzzle)):
-            if original_puzzle[cnsnt] == letter:
-              puzzle_list[cnsnt] = letter
-          print(f"Here is the puzzle:\n{puzzle_list}")
-          # TODO: show the puzzle
-          # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
-          # TODO: add X * spin_points to player's total points
+              for cnsnt in range(len(original_puzzle)):
+                if original_puzzle[cnsnt] == letter:
+                  puzzle_list[cnsnt] = letter
+              print(f"Here is the puzzle:\n{puzzle_list}")
+              # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
+              # TODO: add X * spin_points to player's total points
+            else:
+              print(f"I'm sorry, there are no {letter}s.")
+
+              player_turn[player_num] = False
+              if player_num < 2:
+                player_turn[player_num + 1] = True
+                player_num += 1
+              else:
+                player_num = 0
+                player_turn[player_num] = True
+          else: 
+            print(f"I'm sorry. {letter} is not a consonant.")
+          
+            player_turn[player_num] = False
+            if player_num < 2:
+              player_turn[player_num + 1] = True
+              player_num += 1
+            else:
+              player_num = 0
+              player_turn[player_num] = True
+
+        elif int(player_choice) == 2:
+          letter = input("Which vowel would you like to choose?\n").upper()
+
+          if letter in vowels:
+            print(f"letter {letter}")
+            print(f"original_puzzle {original_puzzle}")
+            if letter in original_puzzle:
+              print(f"{letter} is in the puzzle.")
+
+              for vwl in range(len(original_puzzle)):
+                if original_puzzle[vwl] == letter:
+                  puzzle_list[vwl] = letter
+              print(f"Here is the puzzle:\n{puzzle_list}")
+              # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
+              # TODO: subtract 200 points from player's total points
+            else:
+              print(f"I'm sorry, there are no {letter}s.")
+
+              player_turn[player_num] = False
+              if player_num < 2:
+                player_turn[player_num + 1] = True
+                player_num += 1
+              else:
+                player_num = 0
+                player_turn[player_num] = True
+          else: 
+            print(f"I'm sorry. {letter} is not a vowel.")
+          
+            player_turn[player_num] = False
+            if player_num < 2:
+              player_turn[player_num + 1] = True
+              player_num += 1
+            else:
+              player_num = 0
+              player_turn[player_num] = True
+
+        elif int(player_choice) == 3:
+          puzzle_attempt = input("What is the puzzle?\n")
+          if puzzle_attempt.upper() == puzzle.upper():
+            print(f"Congratulations {players[player_num]}! You solved the puzzle!")
+            # Adding three to kick out of the while player_num < 3 loop
+            player_num += 3
+            game_over = True
+            break
+          else:
+            print(f"I'm sorry, {players[player_num]}, that is incorrect.")
+            player_turn[player_num] = False
+            if player_num < 2:
+              print(f"{players[player_num + 1]}, it is your turn.")
+              player_turn[player_num + 1] = True
+              player_num += 1
+            else:
+              player_num = 0
+              print(f"{players[player_num]}, it is your turn.")
+              player_turn[player_num] = True
+          break
         else:
-          print(f"I'm sorry, there are no {letter}s.")
-      else: 
-        print(f"I'm sorry. {letter} is not a consonant.")
-
-    elif int(player_choice) == 2:
-      letter = input("Which vowel would you like to choose?\n").upper()
-
-      if letter in vowels:
-        print(f"letter {letter}")
-        print(f"original_puzzle {original_puzzle}")
-        if letter in original_puzzle:
-          print(f"{letter} is in the puzzle.")
-
-          for vwl in range(len(original_puzzle)):
-            if original_puzzle[vwl] == letter:
-              puzzle_list[vwl] = letter
-          print(f"Here is the puzzle:\n{puzzle_list}")
-          # TODO: show the puzzle
-          # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
-          # TODO: subtract 200 points from player's total points
-        else:
-          print(f"I'm sorry, there are no {letter}s.")
-      else: 
-        print(f"I'm sorry. {letter} is not a vowel.")
-
-    elif int(player_choice) == 3:
-      puzzle_attempt = input("What is the puzzle?\n")
-      if puzzle_attempt.upper() == puzzle.upper():
-        print(f"Congratulations {players[0]}! You solved the puzzle!")
-        game_over = True
-      else:
-        print(f"I'm sorry, {players[0]}, that is incorrect. {players[1]}, it is your turn.")
-
-    else:
-      print("Please select a valid option.")
-      player_choice = input(player_options)
+          print("Please select a valid option.")
+          player_choice = input(player_options)
 
   play_again = input("Would you like to play again? Y | N ")
   if play_again.upper() == "Y":

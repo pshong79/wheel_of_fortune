@@ -34,6 +34,15 @@ def count_number_of_letter_occurrance(puzzle_list, letter_list):
     i += 1
   return count_list
 
+# def set_next_turn(turn_list, turn_count):
+#   turn_list[turn_count] = False
+#   if turn_count < 2:
+#     turn_list[turn_count + 1] = True
+#     turn_count += 1
+#   else:
+#     turn_count = 0
+#     turn_list[turn_count] = True
+#   return (turn_list, turn_count)
 
 
 ##### main program
@@ -63,9 +72,7 @@ while game_on == True:
             '1100', '5000'
            ]
 
-  player1_score = 0
-  player2_score = 0
-  player3_score = 0
+  players_scores = [ 0, 0, 0 ]
   player_num = 0
 
   game_over = False
@@ -80,6 +87,7 @@ while game_on == True:
   players = []
   letters_of_puzzle = []
   original_puzzle = []
+  already_guessed = []
 
   # puzzle = input("Enter a word or a phrase for the puzzle.\n")
   puzzle = random.choice(possible_puzzles)
@@ -121,31 +129,10 @@ while game_on == True:
           spin_points = random.choice(points)
           letter = input(f"For {spin_points} points, which consonant would you like to choose?\n").upper()
 
-          if letter in consonants:
-            print(f"letter {letter}")
-            print(f"original_puzzle {original_puzzle}")
-            if letter in original_puzzle:
-              print(f"{letter} is in the puzzle.")
+          if letter in already_guessed:
+            print(f"Sorry, {letter} has already been guessed.")
 
-              for cnsnt in range(len(original_puzzle)):
-                if original_puzzle[cnsnt] == letter:
-                  puzzle_list[cnsnt] = letter
-              print(f"Here is the puzzle:\n{puzzle_list}")
-              # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
-              # TODO: add X * spin_points to player's total points
-            else:
-              print(f"I'm sorry, there are no {letter}s.")
-
-              player_turn[player_num] = False
-              if player_num < 2:
-                player_turn[player_num + 1] = True
-                player_num += 1
-              else:
-                player_num = 0
-                player_turn[player_num] = True
-          else: 
-            print(f"I'm sorry. {letter} is not a consonant.")
-          
+            # set_next_turn(player_turn, player_num)
             player_turn[player_num] = False
             if player_num < 2:
               player_turn[player_num + 1] = True
@@ -153,25 +140,54 @@ while game_on == True:
             else:
               player_num = 0
               player_turn[player_num] = True
+
+          else:
+            already_guessed.append(letter)
+            if letter in consonants:
+              if letter in original_puzzle:
+                print(f"{letter} is in the puzzle.")
+
+                for cnsnt in range(len(original_puzzle)):
+                  if original_puzzle[cnsnt] == letter:
+                    puzzle_list[cnsnt] = letter
+                print(f"Here is the puzzle:\n{puzzle_list}")
+                # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
+                # TODO: add X * spin_points to player's total points
+              else:
+                print(f"I'm sorry, there are no {letter}s.")
+
+                # player_turn, player_name = set_next_turn(player_turn, player_num)
+                player_turn[player_num] = False
+                if player_num < 2:
+                  player_turn[player_num + 1] = True
+                  player_num += 1
+                else:
+                  player_num = 0
+                  player_turn[player_num] = True
+            else: 
+              print(f"I'm sorry. {letter} is not a consonant.")
+          
+              # set_next_turn(player_turn, player_num)
+              player_turn[player_num] = False
+              if player_num < 2:
+                player_turn[player_num + 1] = True
+                player_num += 1
+              else:
+                player_num = 0
+                player_turn[player_num] = True
 
         elif int(player_choice) == 2:
-          letter = input("Which vowel would you like to choose?\n").upper()
 
-          if letter in vowels:
-            print(f"letter {letter}")
-            print(f"original_puzzle {original_puzzle}")
-            if letter in original_puzzle:
-              print(f"{letter} is in the puzzle.")
+          if players_scores[player_num] < 200:
+            print(f"I'm sorry, you do not have the minimum 200 points score needed to buy a vowel. Please choose another option. ")
+            player_choice = input(player_options)
+          else:
+            letter = input("Which vowel would you like to choose?\n").upper()
 
-              for vwl in range(len(original_puzzle)):
-                if original_puzzle[vwl] == letter:
-                  puzzle_list[vwl] = letter
-              print(f"Here is the puzzle:\n{puzzle_list}")
-              # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
-              # TODO: subtract 200 points from player's total points
-            else:
-              print(f"I'm sorry, there are no {letter}s.")
+            if letter in already_guessed:
+              print(f"Sorry, {letter} has already been guessed.")
 
+              # set_next_turn(player_turn, player_num)
               player_turn[player_num] = False
               if player_num < 2:
                 player_turn[player_num + 1] = True
@@ -179,16 +195,43 @@ while game_on == True:
               else:
                 player_num = 0
                 player_turn[player_num] = True
-          else: 
-            print(f"I'm sorry. {letter} is not a vowel.")
-          
-            player_turn[player_num] = False
-            if player_num < 2:
-              player_turn[player_num + 1] = True
-              player_num += 1
             else:
-              player_num = 0
-              player_turn[player_num] = True
+              if letter in vowels:
+                print(f"letter {letter}")
+                print(f"original_puzzle {original_puzzle}")
+                if letter in original_puzzle:
+                  print(f"{letter} is in the puzzle.")
+
+                  for vwl in range(len(original_puzzle)):
+                    if original_puzzle[vwl] == letter:
+                      puzzle_list[vwl] = letter
+                  print(f"Here is the puzzle:\n{puzzle_list}")
+                  players_scores[player_num] -= 200
+                  print(f"{player_turn[player_num]}, your score is {players_scores[player_num]}.")
+
+                  # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
+                else:
+                  print(f"I'm sorry, there are no {letter}s.")
+
+                  # set_next_turn(player_turn, player_num)
+                  player_turn[player_num] = False
+                  if player_num < 2:
+                    player_turn[player_num + 1] = True
+                    player_num += 1
+                  else:
+                    player_num = 0
+                    player_turn[player_num] = True
+              else: 
+                print(f"I'm sorry. {letter} is not a vowel.")
+                
+                # set_next_turn(player_turn, player_num)
+                player_turn[player_num] = False
+                if player_num < 2:
+                  player_turn[player_num + 1] = True
+                  player_num += 1
+                else:
+                  player_num = 0
+                  player_turn[player_num] = True
 
         elif int(player_choice) == 3:
           puzzle_attempt = input("What is the puzzle?\n")

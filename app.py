@@ -1,15 +1,15 @@
-#### I think there are currently three things left to do:
-# 1. figure out how to manage turns for players.
-# 2. score keeping for correct letters.
-# 3. score keepting for solving puzzle.
+# TODO: error handling:
+# 1. invalid option for player_option
+# 2. When letter is greater than 1.
+# 3. When letter is "blank".
 
 import random
 
 ##### functions:
 def define_player_order():
-  player1_name = input("Enter Player 1's name: ")
-  player2_name = input("Enter Player 2's name: ")
-  player3_name = input("Enter Player 3's name: ")
+  player1_name = input("Enter Player 1's name: ").upper()
+  player2_name = input("Enter Player 2's name: ").upper()
+  player3_name = input("Enter Player 3's name: ").upper()
 
   all_players = [player1_name, player2_name, player3_name]
   random.shuffle(all_players)
@@ -34,15 +34,13 @@ def count_number_of_letter_occurrance(puzzle_list, letter_list):
     i += 1
   return count_list
 
-# def set_next_turn(turn_list, turn_count):
-#   turn_list[turn_count] = False
-#   if turn_count < 2:
-#     turn_list[turn_count + 1] = True
-#     turn_count += 1
-#   else:
-#     turn_count = 0
-#     turn_list[turn_count] = True
-#   return (turn_list, turn_count)
+def find_number_of_letter(a_list, user_letter):
+  for place in range(len(a_list)):
+    if user_letter == a_list[place]:
+      # Assigning place to index because in the for statement, it goes from 0 to len(a_list) so if
+      # place is returned, it will always return the len(a_list) value  
+      index = place
+  return index
 
 
 ##### main program
@@ -97,16 +95,9 @@ while game_on == True:
   # Reference: https://stackoverflow.com/questions/11993878/python-why-does-my-list-change-when-im-not-actually-changing-it
   original_puzzle = puzzle_list[:]
 
-  # delete during clean up
-  print(f"puzzle_list {puzzle_list}")
-  print(f"original_puzzle {original_puzzle}")
   letters_of_puzzle = get_all_letters_of_puzzle(puzzle_list)
-  # delete during clean up
-  print(letters_of_puzzle)
   
   letter_count = count_number_of_letter_occurrance(puzzle_list, letters_of_puzzle)
-  # delete during clean up
-  print(letter_count)
 
   for space in range(len(puzzle_list)):
     if puzzle_list[space] == " ":
@@ -115,7 +106,6 @@ while game_on == True:
       puzzle_list[space] = " "
   print(f"Here is the puzzle:\n{puzzle_list}")
   # TODO: if time, display each word on a new line
-  # TODO: if time, check for already guessed letters
 
   players = define_player_order()
 
@@ -123,10 +113,12 @@ while game_on == True:
     while player_num < 3:
       while player_turn[player_num] == True:
         print(f"{players[player_num]}, would you like to:")
-        player_choice = input(player_options)
+        print(player_options)
+        player_choice = input()
 
         if int(player_choice) == 1:
           spin_points = random.choice(points)
+          print(f"Letters already_guessed: {already_guessed}")
           letter = input(f"For {spin_points} points, which consonant would you like to choose?\n").upper()
 
           if letter in already_guessed:
@@ -143,20 +135,22 @@ while game_on == True:
 
           else:
             already_guessed.append(letter)
+
             if letter in consonants:
               if letter in original_puzzle:
-                print(f"{letter} is in the puzzle.")
+                
+                num_of_letter = find_number_of_letter(letters_of_puzzle, letter)
+                print(f"Yes, there are {letter_count[num_of_letter]} {letter}s in the puzzle.")
+                players_scores[player_num] += int(spin_points) * (letter_count[num_of_letter])
+                print(f"{players[player_num]}'s score is {players_scores[player_num]}.")
 
                 for cnsnt in range(len(original_puzzle)):
                   if original_puzzle[cnsnt] == letter:
                     puzzle_list[cnsnt] = letter
                 print(f"Here is the puzzle:\n{puzzle_list}")
-                # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
-                # TODO: add X * spin_points to player's total points
               else:
                 print(f"I'm sorry, there are no {letter}s.")
 
-                # player_turn, player_name = set_next_turn(player_turn, player_num)
                 player_turn[player_num] = False
                 if player_num < 2:
                   player_turn[player_num + 1] = True
@@ -182,6 +176,7 @@ while game_on == True:
             print(f"I'm sorry, you do not have the minimum 200 points score needed to buy a vowel. Please choose another option. ")
             player_choice = input(player_options)
           else:
+            print(f"Letters already_guessed: {already_guessed}")
             letter = input("Which vowel would you like to choose?\n").upper()
 
             if letter in already_guessed:
@@ -196,20 +191,20 @@ while game_on == True:
                 player_num = 0
                 player_turn[player_num] = True
             else:
+              already_guessed.append(letter)
+
               if letter in vowels:
-                print(f"letter {letter}")
-                print(f"original_puzzle {original_puzzle}")
+
                 if letter in original_puzzle:
-                  print(f"{letter} is in the puzzle.")
+                  num_of_letter = find_number_of_letter(letters_of_puzzle, letter)
+                  print(f"Yes, there are {letter_count[num_of_letter]} {letter}s in the puzzle.")
+                  players_scores[player_num] -= 200
+                  print(f"{players[player_num]}'s score is {players_scores[player_num]}.")
 
                   for vwl in range(len(original_puzzle)):
                     if original_puzzle[vwl] == letter:
                       puzzle_list[vwl] = letter
                   print(f"Here is the puzzle:\n{puzzle_list}")
-                  players_scores[player_num] -= 200
-                  print(f"{player_turn[player_num]}, your score is {players_scores[player_num]}.")
-
-                  # TODO: change print statement to say "Yes, there is/are X {letter}(s)"
                 else:
                   print(f"I'm sorry, there are no {letter}s.")
 
@@ -236,7 +231,8 @@ while game_on == True:
         elif int(player_choice) == 3:
           puzzle_attempt = input("What is the puzzle?\n")
           if puzzle_attempt.upper() == puzzle.upper():
-            print(f"Congratulations {players[player_num]}! You solved the puzzle!")
+            print(f"Congratulations {players[player_num]}! You solved the puzzle: {puzzle}")
+            print(f"{original_puzzle}")
             # Adding three to kick out of the while player_num < 3 loop
             player_num += 3
             game_over = True
@@ -265,7 +261,3 @@ while game_on == True:
   else:
     print("Please select a valid option.")
     play_again = input("Would you like to play again? Y | N ")
-
-
-
-

@@ -2,6 +2,7 @@
 # 1. invalid option for player_option
 # 2. When letter is greater than 1.
 # 3. When letter is "blank".
+# NOTE: Generally, just need to refactor.
 
 import random
 
